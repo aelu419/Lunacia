@@ -5,9 +5,9 @@ using Pubsub;
 
 public class BlackHole : MonoBehaviour
 {
-    public float particle_centri_force, particle_angular_speed, particle_radial_speed;
+    public float particle_angular_speed, particle_radial_speed;
     private bool counter_clockwise;
-    public Color normalGlow, wakingGlow;
+    public Gradient normalGlow, wakingGlow;
     public float attraction;
     [HideInInspector]
     public bool inWakingSight;
@@ -36,16 +36,8 @@ public class BlackHole : MonoBehaviour
             new GradientAlphaKey(0, 1)
         };
 
-        Gradient nGradRaw = new Gradient();
-        nGradRaw.alphaKeys = aKeys;
-        nGradRaw.colorKeys = new GradientColorKey[]{ new GradientColorKey(normalGlow, 0) };
-
-        Gradient wGradRaw = new Gradient();
-        wGradRaw.alphaKeys = aKeys;
-        wGradRaw.colorKeys = new GradientColorKey[] { new GradientColorKey(wakingGlow, 0) };
-
-        NORMAL_GRADIENT = new ParticleSystem.MinMaxGradient(nGradRaw);
-        WAKING_GRADIENT = new ParticleSystem.MinMaxGradient(wGradRaw);
+        NORMAL_GRADIENT = new ParticleSystem.MinMaxGradient(normalGlow);
+        WAKING_GRADIENT = new ParticleSystem.MinMaxGradient(wakingGlow);
 
         //connect to graphic components
         pSystem = GetComponent<ParticleSystem>();
@@ -53,7 +45,7 @@ public class BlackHole : MonoBehaviour
         pSystemTrail.colorOverLifetime = inWakingSight ? WAKING_GRADIENT : NORMAL_GRADIENT;
 
         blackholeSprite = GetComponent<SpriteRenderer>();
-        blackholeSprite.color = inWakingSight ? wakingGlow : normalGlow;
+        blackholeSprite.color = inWakingSight ? wakingGlow.colorKeys[0].color : normalGlow.colorKeys[0].color;
 
         counter_clockwise = !inWakingSight;
 
@@ -70,14 +62,14 @@ public class BlackHole : MonoBehaviour
                 inWakingSight = true;
                 counter_clockwise = false;
 
-                blackholeSprite.color = wakingGlow;
+                blackholeSprite.color = wakingGlow.colorKeys[0].color;
                 pSystemTrail.colorOverLifetime = WAKING_GRADIENT;
                 break;
             case 0:
                 inWakingSight = false;
                 counter_clockwise = true;
 
-                blackholeSprite.color = normalGlow;
+                blackholeSprite.color = normalGlow.colorKeys[0].color;
                 pSystemTrail.colorOverLifetime = NORMAL_GRADIENT;
                 break;
         }
@@ -138,11 +130,6 @@ public class BlackHole : MonoBehaviour
 
         for (int i = 0; i < particles.Length; i++)
         {
-            if (particles[i].position.magnitude < pSystem.shape.radius * 0.3)
-            {
-                particles[i].remainingLifetime = 0;
-                continue;
-            }
             //particles[i].position *= 0.9f;
             particles[i].velocity = particle_angular_speed * rotateV3(
                 v3FromAngle(angleFromV2(particles[i].position)),
