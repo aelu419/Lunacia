@@ -67,6 +67,7 @@ fmod.log
 fmod_editor.log
 
 #FMOD Plugin Files
+/Assets/Plugins/FMOD/**
 /Assets/Plugins/FMOD/Cache/Editor/FMODStudioCache.asset
 /Assets/Plugins/FMOD/Cache/Editor/FMODStudioCache.asset.meta
 /Assets/StreamingAssets/**/*.bank
